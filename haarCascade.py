@@ -1,7 +1,7 @@
 #face recognision using haar-cascade
 import pygame,math,sys
 imagePath="faces\\0.jpg"
-haarPath="haars\\0.txt"
+haarNumbers=[6,3,9,8,5,0,7]
 
 pygame.init()
 def mean(array):
@@ -49,10 +49,14 @@ def haardifference(image,haar,X,Y):
             
 #open image and haar as array
 image=loadImage(imagePath)
-(average,sDev,haar)=loadHaar(haarPath)
+pygameImage=pygame.image.load(imagePath)
+haars=[loadHaar("haars\\"+str(i)+".txt") for i in haarNumbers]
 
-width=len(image[0])-len(haar[0])
-height=len(image)-len(haar)
+Hwidth=len(haars[0][2][0])
+Hheight=len(haars[0][2])
+width=len(image[0])-Hwidth
+height=len(image)-Hheight
+
 
 screen = pygame.display.set_mode((width,height))
 best=pow(10,10)
@@ -60,33 +64,22 @@ bestX=[]
 bestY=[]
 
 for x in range(width):
+    n=20*x/width
+    if n==int(n):
+        print(str(int(5*n))+"%")
     for y in range(height):
-        dif = abs(haardifference(image,haar,x,y)-average)
-
-        if dif==best:
-            bestY.append(x)
-            bestY.append(y)
-        elif dif<best:
-            bestX=[x]
-            bestY=[y]
-            best=dif
-        try:
+        h=0
+        for haar in haars:
+            if abs(haardifference(image,haar[2],x,y)-haar[0])>2*haar[1]:
+                break
+            else:
+                (R,G,B,A)=screen.get_at((x,y))
+                screen.set_at((x,y),(R+(255/len(haarNumbers)),G+(255/len(haarNumbers)),B+(255/len(haarNumbers)),A))
+            h+=1
+            if h==len(haarNumbers):
+                screen.blit(pygameImage, (0, 0), (x, y, Hwidth, Hheight))
+                pygame.display.flip()
             
-            screen.set_at((x,y),(dif*2,dif*2,dif*2,255))
-            if dif>50:
-                screen.set_at((x,y),(0,dif*2,0,255))
-        except:
-            screen.set_at((x,y),(255,0,0,255))
     pygame.event.get()
     pygame.display.flip()
-
-print((round(mean(bestX)),round(mean(bestY)))," heeft waarde:" ,best)
-print(haardifference(image,haar,round(mean(bestX)),round(mean(bestY))))
-
-screen.set_at((int(round(mean(bestX))),int(round(mean(bestY)))),(255,0,0))
-screen.set_at((int(round(mean(bestX)))+1,int(round(mean(bestY)))-1),(255,0,0))
-screen.set_at((int(round(mean(bestX)))+1,int(round(mean(bestY)))+1),(255,0,0))
-screen.set_at((int(round(mean(bestX)))-1,int(round(mean(bestY)))+1),(255,0,0))
-screen.set_at((int(round(mean(bestX)))-1,int(round(mean(bestY)))-1),(255,0,0))
-
 pygame.display.flip()
