@@ -1,5 +1,5 @@
 # image-recognition
-I am trying to create image recognition software using Python (hopefully the end product will not even require any external libraries), and will be using a 'haar cascade'  to do so. It is not yet working.
+I am trying to create image recognition software using Python (hopefully the end product will not even require any external libraries), and will be using a 'haar cascade'  to do so. It kind of works.
 
 ### Theory
 ##### Haars
